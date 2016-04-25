@@ -7,12 +7,20 @@ use Mix.Config
 
 # Configures the endpoint
 config :pickems, Pickems.Endpoint,
-  url: [host: "localhost"],
+  http: [port: {:system, "PORT"}],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  url: [host: "pickems-fb-api.herokuapp.com", port: 443],
   root: Path.dirname(__DIR__),
-  secret_key_base: "Gy3uafdaGg4ohhDRew3RCoLpVSdbxsgmsEBv4qz2eNcKl4VnTlrdUBqHVNxhOSmv",
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
   render_errors: [accepts: ~w(json)],
   pubsub: [name: Pickems.PubSub,
            adapter: Phoenix.PubSub.PG2]
+
+
+config :pickems, Pickems.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: 20
 
 # Configures Elixir's Logger
 config :logger, :console,
