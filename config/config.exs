@@ -11,11 +11,10 @@ config :pickems, Pickems.Endpoint,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   url: [host: "pickems-fb-api.herokuapp.com", port: 443],
   root: Path.dirname(__DIR__),
-  secret_key_base: System.get_env("SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   render_errors: [accepts: ~w(json)],
   pubsub: [name: Pickems.PubSub,
            adapter: Phoenix.PubSub.PG2]
-
 
 config :pickems, Pickems.Repo,
   adapter: Ecto.Adapters.Postgres,
