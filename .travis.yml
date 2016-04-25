@@ -1,0 +1,17 @@
+language: elixir
+elixir:
+- 1.2
+otp_release:
+- 18.2
+sudo: false
+addons:
+  postgresql: '9.4'
+before_script:
+- psql -c 'create database pickems_test;' -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: WTJ+dCMkg9shifIPoqDuOO36i6pmMbOpFy1PllS2kgXSFOk9DkujtG1HAxzg26g9oMUmISnznpWqj4RlFeI9KgpjlP5VbgozyL9ABjh7XcPyrLbIbTNZXU1wxh62TbEsOEHo11Y+QiUVIMqvWLBq0//Ph5Ca2D2eBNdeiO0/BEk6Mv2qxVEjoGmp8Ww0lbBvdVasIc4LEqwb4URLzZEbhQcNmFeTp7jPtuynpIwyXKm0ZDeSIkx7dv+3T2oUkSIxt8n8Fd+HaMbouMle+A+7WgQx1RY5BnlhyaSMM6+K3UTiAZDv0L9SlhYdS6L6YIqyK/Jv8r4q8jecHkSJWi2tHCppSHvJmXem1Sd0JFAZGTfMW5I2x/ItHJwUMQlgqWpxCa6x+Qz2wJT5bx8s8gs29Jfr0cZTEFZyTci982MUHBGjHH/kffJNFQ4iL0AQVW8HsU3c4q5x95p6XFTyH8/Y7Wzu4WArOcZcI3YsvB3vViyXkyfsRknuCs95jkhq19h9DEBKvvFCIIzcSzyDSCmrutXnbxJI0ss8FTLjoCaC7nwUIW9xycgEozVNKkmQxhEodr6wx8cMvUVn1UT2+ZSm2m3ALY//dowR35akTOM1RxYqNAGMJlLsgIMpQXaNR9mvNNBvn0zxrmm6KA8imi/qC8cmGdplATe8eh3nfGudfbw=
+  app: pickems-fb-api
+  on:
+    repo: kcin1018/pickems-api
