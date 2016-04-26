@@ -8,7 +8,6 @@ use Mix.Config
 # with brunch.io to recompile .js and .css sources.
 config :pickems, Pickems.Endpoint,
   http: [port: 4000],
-  debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: []
@@ -24,8 +23,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :pickems, Pickems.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "root",
+  password: "secret",
   database: "pickems_dev",
   hostname: "localhost",
   pool_size: 10

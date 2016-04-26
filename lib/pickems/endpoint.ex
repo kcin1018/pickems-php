@@ -34,6 +34,5 @@ defmodule Pickems.Endpoint do
     signing_salt: "ULICPBgJ"
 
   plug CORSPlug
-
   plug Pickems.Router
 end

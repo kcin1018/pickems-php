@@ -19,6 +19,22 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :phoenix, :format_encoders,
+  "json-api": Poison
+
+config :plug, :mimes, %{
+  "application/vnd.api+json" => ["json-api"]
+}
+
+config :guardian, Guardian,
+  allowed_algos: ["HS512"], # optional
+  verify_module: Guardian.JWT,  # optional
+  issuer: "Pickems",
+  ttl: { 30, :days },
+  verify_issuer: true, # optional
+  secret_key: System.get_env("GUARDIAN_SECRET") || "OwCEBfV736sj+Vi1iSzc5ul3jtwVGrc4GpD1B0gS7xvouNgOgDdCkLIldGVd75wB",
+  serializer: Pickems.GuardianSerializer
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

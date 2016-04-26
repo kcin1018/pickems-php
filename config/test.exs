@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :pickems, Pickems.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "root",
+  password: "secret",
   database: "pickems_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
