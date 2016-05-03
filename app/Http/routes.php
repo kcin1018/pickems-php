@@ -33,7 +33,7 @@ $api->version('v1', function ($api) {
             $api->patch('users/{user}', 'UsersController@update');
             $api->delete('users/{user}', 'UsersController@destroy');
 
-            $api->get('teams', 'TeamsController@list');
+            $api->get('teams', 'TeamsController@index');
             $api->get('teams/{team}', 'TeamsController@show');
             $api->post('teams', 'TeamsController@store');
             $api->patch('teams/{team}', 'TeamsController@update');
