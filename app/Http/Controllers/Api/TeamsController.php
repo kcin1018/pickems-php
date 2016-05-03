@@ -5,6 +5,7 @@ namespace Pickems\Http\Controllers\Api;
 use Pickems\Team;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Pickems\Http\Controllers\Controller;
 use Pickems\Transformers\TeamTransformer;
 
@@ -12,10 +13,19 @@ class TeamsController extends Controller
 {
     use Helpers;
 
-    public function index()
+    public function index(Request $request)
     {
+        // fetch logged in user
+        $user = JWTAuth::toUser($request->headers->get('token'));
+
+        // check if they want all teams
+        if ($request->has('all_teams') && $user->admin) {
+            return $this->response->collection(Team::all(), new TeamTransformer(), ['key' => 'teams']);
+        }
+
         // fetch all the team data
-        $teams = Team::all();
+        $teams = Team::where('user_id', '=', $user->id)
+            ->get();
 
         return $this->response->collection($teams, new TeamTransformer(), ['key' => 'teams']);
     }
