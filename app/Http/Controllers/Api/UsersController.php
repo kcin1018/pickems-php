@@ -5,18 +5,15 @@ namespace Pickems\Http\Controllers\Api;
 use Pickems\User;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
-use Pickems\Http\Requests\UserRequest;
 use Pickems\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Pickems\Transformers\UserTransformer;
 
 class UsersController extends Controller
 {
     use Helpers;
 
-    public function list()
+    public function index()
     {
         // fetch all the user data
         $users = User::all();
@@ -58,7 +55,7 @@ class UsersController extends Controller
 
         // validate the incoming data
         $this->apiValidation($request, [
-            'data.attributes.email' => 'email|unique:users,email,' .$user->id,
+            'data.attributes.email' => 'email|unique:users,email,'.$user->id,
         ]);
 
         // fetch all the data
@@ -70,7 +67,7 @@ class UsersController extends Controller
         }
 
         // update the values
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $user->$key = $value;
         }
         $user->save();
