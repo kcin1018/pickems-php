@@ -1,14 +1,18 @@
 language: php
-
 php:
-  - 5.6
-  - 5.5
-  - 7.0
-
+- 5.6
+- 5.5
+- 7.0
 before_script:
-  - cp .env.travis .env
-  - composer self-update
-  - composer install --no-interaction
-
+- cp .env.travis .env
+- composer self-update
+- composer install --no-interaction
 script:
-  - vendor/bin/phpunit
+- vendor/bin/phpunit
+deploy:
+  provider: heroku
+  api_key:
+    secure: M1sRz4wGsHtxfRgQkC+TtBdIXck3sKTEpBN2U/Q/C0yTtfT2pYK98473PM6GFqAzuMB+AHLIA8vls6p2txeC3LemYmO50wm4O64NUwy4Ru57IgR4ETQ82vOELUBJ3Ib6TO6RZVKirOuJfLjFWPFNzQsnKO4RtsPKB5sHvdeUuZ9xtHEY9mxgAl6qqGQYQadFPuHVA5byKq1PeWKcnQX/PIuhFUIsOPxalilY64tJomdcmC+zOOfwpbuT/C9/G6F+Oq5wOUNBN42HIff7Rrg/2hZoyUgGXmBHi2epI6Z/PRxu+RinLV6aurdoYlSyJTQlrVnQ+cEEEPBupDoGHHthSKB3LehjX1yQisZMjelwPo39ajY2HQtb6wTeCfs2bCh3epgeR6PuQrtE7tt62oHdRcgXzhYG0klUMxkcbFeIat4lccIleCJGyKYrJQlrp3WAy6vmuhlPPqZGAP8eAL1Z6lBvCI1LScqqzUcHR57DOvgtRIBqNbqov7U+DizCvcbjxlJoYQORxLMkWVKlwD11iR6E/ODHEsKXWCBYgNlrTIcti+fGPggB8QLN9J7giPsssdjp04LHfgdwSc7tjmC7l3PHUkswzdjlFV9KCVAnrA7NeLergYjTQC1uf8nJY5VM++v18pQ66yDc9KFq5zHye/Q5+WO1cluquXQ3OfODWK0=
+  app: pickems-fb-api
+  on:
+    repo: kcin1018/pickems-api

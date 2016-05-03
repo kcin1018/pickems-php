@@ -6,7 +6,9 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.2.*"
+        "laravel/framework": "5.2.*",
+        "dingo/api": "1.0.x@dev",
+        "tymon/jwt-auth": "^0.5.9"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -20,7 +22,8 @@
             "database"
         ],
         "psr-4": {
-            "Pickems\\": "app/"
+            "Pickems\\": "app/",
+            "PickemsTest\\": "tests/"
         }
     },
     "autoload-dev": {
