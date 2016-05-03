@@ -5,18 +5,14 @@ namespace Pickems\Http\Controllers\Api;
 use Pickems\Team;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
-use Pickems\Http\Requests\TeamRequest;
 use Pickems\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Pickems\Transformers\TeamTransformer;
 
 class TeamsController extends Controller
 {
     use Helpers;
 
-    public function list()
+    public function index()
     {
         // fetch all the team data
         $teams = Team::all();
@@ -64,7 +60,7 @@ class TeamsController extends Controller
         $data = $this->fetchData($request);
 
         // update the values
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $team->$key = $value;
         }
         $team->save();
