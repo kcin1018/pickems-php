@@ -6,7 +6,6 @@ use Exception;
 use Pickems\User;
 use PickemsTest\TestCase;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -14,96 +13,116 @@ class UsersTest extends TestCase
 {
     use DatabaseMigrations;
     const API_URL = 'api/v1/users/';
-    protected $token;
 
-    // protected function setupAuth()
-    // {
-    //     $this->token =
-    //     $user = factory(User::class)->create();
-    //     Auth::login($user);
-    // }
+    public function testGetUsers()
+    {
+        // make and test request
+        $users = factory(User::class, 5)->create();
+        $response = $this->callGet(self::API_URL, [], true);
+        $this->assertResponseOk();
+        $this->assertNotEmpty($collection = json_decode($response->getContent()));
 
-    // public function testGetUsers()
-    // {
-    //     $this->setupAuth();
+        // make and test request for single items
+        foreach ($collection->data as $user) {
+            $response = $this->callGet(self::API_URL.$user->id, [], true);
+            $this->assertResponseOk();
+            $this->assertEquals($user->type, 'users');
+            $this->assertNotNull($item = json_decode($response->getContent()));
+            $this->assertEquals($user->attributes, $item->data->attributes);
+            $this->assertFalse(isset($item->data->attributes->password));
+        }
+    }
 
-    //     $users = factory(User::class, 5)->create();
-    //     $response = $this->callGet(self::API_URL);
-    //     $this->assertResponseOk();
-    //     $this->assertNotEmpty($collection = json_decode($response->getContent()));
+    public function testFailedPostUsers()
+    {
+        // generate request data
+        $postData = json_encode([
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'name' => 'Test User',
+                ],
+            ],
+        ]);
 
-    //     foreach ($collection->data as $user) {
-    //         $response = $this->callGet(self::API_URL.$user->id);
-    //         $this->assertResponseOk();
-    //         $this->assertNotNull($item = json_decode($response->getContent()));
-    //         $this->assertEquals($user->attributes, $item->data->attributes);
-    //     }
-    // }
+        // make and test request
+        $response = $this->callPost(self::API_URL, $postData, true);
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $responseContent = json_decode($response->getContent());
+        $this->assertNotNull($responseContent->message);
+        $this->assertNotNull($responseContent->errors);
+        $this->assertNotNull($responseContent->status_code);
+        $this->assertNotNull($responseContent->debug);
+    }
 
-    // public function testDeleteUsers()
-    // {
-    //     $user = factory(User::class, 1)->create();
-    //     // test getting all users
-    //     $response = $this->callDelete(self::API_URL.$user->id);
-    //     $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-    //     // test to make sure the user was deleted
-    //     try {
-    //         User::findOrFail($user->id);
-    //         $this->assertTrue(false, 'Found user that should have been deleted');
-    //     } catch (Exception $e) {
-    //         $this->assertTrue($e instanceof ModelNotFoundException);
-    //     }
-    // }
-    // public function testPostUsers()
-    // {
-    //     // create user info and convert it to json
-    //     $userObject = factory(User::class)->make();
-    //     $userData = json_encode([
-    //         'data' => [
-    //             'type' => 'users',
-    //             'attributes' => $userObject->toArray() + [
-    //                 'birthday' => $userObject->birthday->format('Y-m-d'),
-    //                 'password' => $userObject->password,
-    //             ],
-    //         ],
-    //     ]);
-    //     // test getting all users
-    //     $response = $this->callPost(self::API_URL, $userData);
-    //     $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-    //     $this->assertNotNull($user = json_decode($response->getContent())->data);
-    //     $this->assertNotEmpty($user->id);
-    //     // test to make sure the user was created
-    //     try {
-    //         User::findOrFail($user->id);
-    //         $this->assertTrue(true);
-    //     } catch (Exception $e) {
-    //         $this->assertTrue(false, 'User account not found');
-    //     }
-    // }
-    // public function testPatchUsers()
-    // {
-    //     $userObject = factory(User::class)->create();
-    //     $userData = [
-    //         'data' => [
-    //             'type' => 'users',
-    //             'attributes' => $userObject->toArray() + [
-    //                 'birthday' => $userObject->birthday->format('Y-m-d'),
-    //                 'password' => $userObject->password,
-    //             ],
-    //         ],
-    //     ];
-    //     $userData['data']['attributes']['first_name'] = 'niweuogbnwiuebg';
-    //     $userData = json_encode($userData);
-    //     $response = $this->callPatch(self::API_URL.$userObject->id, $userData);
-    //     $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-    //     $this->assertNotNull($user = json_decode($response->getContent())->data);
-    //     $this->assertNotEmpty($user->id);
-    //     // test to make sure the user was created
-    //     try {
-    //         $updatedUser = User::findOrFail($userObject->id);
-    //         $this->assertEquals('niweuogbnwiuebg', $updatedUser->first_name);
-    //     } catch (Exception $e) {
-    //         $this->assertTrue(false, 'User account not found');
-    //     }
-    // }
+    public function testPostUsers()
+    {
+        // generate request data
+        $object = factory(User::class)->make();
+        $postData = json_encode([
+            'data' => [
+                'type' => 'users',
+                'attributes' => $object->toArray() + ['password' => $object->password],
+            ],
+        ]);
+
+        // make and test request
+        $response = $this->callPost(self::API_URL, $postData, true);
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $this->assertNotNull($user = json_decode($response->getContent())->data);
+        $this->assertNotEmpty($user->id);
+
+        // test data in database
+        try {
+            User::findOrFail($user->id);
+            $this->assertTrue(true);
+        } catch (Exception $e) {
+            $this->assertTrue(false, 'User account not found');
+        }
+    }
+
+    public function testPatchUsers()
+    {
+        // generate request data
+        $object = factory(User::class)->create();
+        $object->name = str_random(15);
+        $objectId = $object->id;
+        unset($object->id);
+        $patchData = json_encode([
+            'data' => [
+                'id' => $objectId,
+                'type' => 'users',
+                'attributes' => $object->toArray(),
+            ],
+        ]);
+
+        // make and test request
+        $response = $this->callPatch(self::API_URL.$objectId, $patchData, true);
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertNotNull($user = json_decode($response->getContent())->data);
+        $this->assertNotEmpty($user->id);
+
+        // test data in database
+        try {
+            $updatedObject = User::findOrFail($objectId);
+            $this->assertEquals($object->name, $updatedObject->name);
+        } catch (Exception $e) {
+            $this->assertTrue(false, $e->getMessage());
+        }
+    }
+
+    public function testDeleteUsers()
+    {
+        // generate request data
+        $object = factory(User::class)->create();
+        $response = $this->callDelete(self::API_URL.$object->id, true);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        try {
+            User::findOrFail($object->id);
+            $this->assertTrue(false, 'Found user that should have been deleted');
+        } catch (Exception $e) {
+            $this->assertTrue($e instanceof ModelNotFoundException, $e->getMessage());
+        }
+    }
 }

@@ -29,6 +29,9 @@ $api->version('v1', function ($api) {
         // Protected methods (require auth)
         $api->group(['middleware' => 'api.auth'], function ($api) {
             $api->get('users', 'UsersController@list');
+            $api->get('users/{user}', 'UsersController@show');
+            $api->patch('users/{user}', 'UsersController@update');
+            $api->delete('users/{user}', 'UsersController@destroy');
         });
 
         // Public methods

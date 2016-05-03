@@ -35,28 +35,18 @@ class TestCase extends BaseTest
      *
      * @return Response
      */
-    protected function callGet($url, array $parameters = [])
+    protected function callGet($url, array $parameters = [], $auth = false)
     {
-        return $this->call('GET', $url, $parameters, [], [], $this->getServerArray());
+        return $this->call('GET', $url, $parameters, [], [], $this->getServerArray($auth));
     }
     /**
      * @param string $url
      *
      * @return Response
      */
-    protected function callDelete($url)
+    protected function callDelete($url, $auth = false)
     {
-        return $this->call('DELETE', $url, [], [], [], $this->getServerArray());
-    }
-    /**
-     * @param string $url
-     * @param string $content
-     *
-     * @return Response
-     */
-    protected function callPost($url, $content)
-    {
-        return $this->call('POST', $url, [], [], [], $this->getServerArray(), $content);
+        return $this->call('DELETE', $url, [], [], [], $this->getServerArray($auth));
     }
     /**
      * @param string $url
@@ -64,20 +54,31 @@ class TestCase extends BaseTest
      *
      * @return Response
      */
-    protected function callPatch($url, $content)
+    protected function callPost($url, $content, $auth = false)
     {
-        return $this->call('PATCH', $url, [], [], [], $this->getServerArray(), $content);
+        return $this->call('POST', $url, [], [], [], $this->getServerArray($auth), $content);
+    }
+    /**
+     * @param string $url
+     * @param string $content
+     *
+     * @return Response
+     */
+    protected function callPatch($url, $content, $auth = false)
+    {
+        return $this->call('PATCH', $url, [], [], [], $this->getServerArray($auth), $content);
     }
     /**
      * @return array
      */
-    public function getServerArray()
+    public function getServerArray($auth = false)
     {
         $server = [
             'CONTENT_TYPE' => 'application/vnd.api+json',
         ];
         // required for csrf_token()
         \Session::start();
+
         // Here you can choose what auth will be used for testing (basic or jwt)
         $headers = [
             'CONTENT-TYPE' => 'application/vnd.api+json',
@@ -85,6 +86,12 @@ class TestCase extends BaseTest
             'X-Requested-With' => 'XMLHttpRequest',
             'X-CSRF-TOKEN' => csrf_token(),
         ];
+
+        if ($auth) {
+            list($response, $tokenResponse) = $this->authenticateUser();
+            $headers['Authorization'] = 'Bearer '.$tokenResponse->token;
+        }
+
         foreach ($headers as $key => $value) {
             $server['HTTP_'.$key] = $value;
         }
@@ -94,12 +101,13 @@ class TestCase extends BaseTest
 
     public function authenticateUser()
     {
-        $user = factory(User::class)->create(['password' => bcrypt('testing')]);
+        $user = factory(User::class)->create(['password' => bcrypt('testing'), 'admin' => true]);
 
         $url = 'api/v1/auth/login';
         $data = ['email' => $user->email, 'password' => 'testing'];
 
         $response = $this->callPost($url, json_encode($data));
+        $tokenResponse = json_decode($response->getContent());
 
         return [$response, json_decode($response->getContent())];
     }
