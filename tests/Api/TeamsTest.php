@@ -3,21 +3,23 @@
 namespace PickemsTest\Api;
 
 use Exception;
+use Pickems\Team;
 use Pickems\User;
 use PickemsTest\TestCase;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UsersTest extends TestCase
+class TeamsTest extends TestCase
 {
     use DatabaseMigrations;
-    const API_URL = 'api/v1/users/';
+    const API_URL = 'api/v1/teams/';
 
-    public function testGetUsers()
+    public function testGetTest()
     {
         // make and test request
-        factory(User::class, 5)->create();
+        $user = factory(User::class)->create();
+        factory(Team::class, 5)->create(['user_id' => $user->id]);
         $response = $this->callGet(self::API_URL, [], true);
         $this->assertResponseOk();
         $this->assertNotEmpty($collection = json_decode($response->getContent()));
@@ -26,21 +28,30 @@ class UsersTest extends TestCase
         foreach ($collection->data as $user) {
             $response = $this->callGet(self::API_URL.$user->id, [], true);
             $this->assertResponseOk();
-            $this->assertEquals($user->type, 'users');
+            $this->assertEquals($user->type, 'teams');
             $this->assertNotNull($item = json_decode($response->getContent()));
             $this->assertEquals($user->attributes, $item->data->attributes);
             $this->assertFalse(isset($item->data->attributes->password));
         }
     }
 
-    public function testPostUsers()
+    public function testPostTest()
     {
         // generate request data
-        $object = factory(User::class)->make();
+        $user = factory(User::class)->create();
+        $object = factory(Team::class)->make();
         $postData = json_encode([
             'data' => [
-                'type' => 'users',
-                'attributes' => $object->toArray() + ['password' => $object->password],
+                'type' => 'teams',
+                'attributes' => $object->toArray(),
+                'relationships' => [
+                    'user' => [
+                        'data' => [
+                            'type' => 'users',
+                            'id' => $user->id,
+                        ],
+                    ],
+                ],
             ],
         ]);
 
@@ -52,25 +63,34 @@ class UsersTest extends TestCase
 
         // test data in database
         try {
-            User::findOrFail($user->id);
+            Team::findOrFail($user->id);
             $this->assertTrue(true);
         } catch (Exception $e) {
-            $this->assertTrue(false, 'User account not found');
+            $this->assertTrue(false, 'Test account not found');
         }
     }
 
-    public function testPatchUsers()
+    public function testPatchTest()
     {
         // generate request data
-        $object = factory(User::class)->create();
+        $user = factory(User::class)->create();
+        $object = factory(Team::class)->create(['user_id' => $user->id]);
         $object->name = str_random(15);
         $objectId = $object->id;
         unset($object->id);
         $patchData = json_encode([
             'data' => [
                 'id' => $objectId,
-                'type' => 'users',
+                'type' => 'teams',
                 'attributes' => $object->toArray(),
+                'relationships' => [
+                    'user' => [
+                        'data' => [
+                            'type' => 'users',
+                            'id' => $user->id,
+                        ],
+                    ],
+                ],
             ],
         ]);
 
@@ -82,22 +102,23 @@ class UsersTest extends TestCase
 
         // test data in database
         try {
-            $updatedObject = User::findOrFail($objectId);
+            $updatedObject = Team::findOrFail($objectId);
             $this->assertEquals($object->name, $updatedObject->name);
         } catch (Exception $e) {
             $this->assertTrue(false, $e->getMessage());
         }
     }
 
-    public function testDeleteUsers()
+    public function testDeleteTest()
     {
         // generate request data
-        $object = factory(User::class)->create();
+        $user = factory(User::class)->create();
+        $object = factory(Team::class)->create(['user_id' => $user]);
         $response = $this->callDelete(self::API_URL.$object->id, true);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
 
         try {
-            User::findOrFail($object->id);
+            Team::findOrFail($object->id);
             $this->assertTrue(false, 'Found user that should have been deleted');
         } catch (Exception $e) {
             $this->assertTrue($e instanceof ModelNotFoundException, $e->getMessage());

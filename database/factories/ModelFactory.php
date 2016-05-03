@@ -20,3 +20,10 @@ $factory->define(Pickems\User::class, function (Faker\Generator $faker) {
         'admin' => false,
     ];
 });
+
+$factory->define(Pickems\Team::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->company,
+        'paid' => $faker->boolean,
+    ];
+});
