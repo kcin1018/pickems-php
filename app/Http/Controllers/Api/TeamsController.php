@@ -87,4 +87,44 @@ class TeamsController extends Controller
 
         return $this->response->array([])->setStatusCode(204);
     }
+
+    public function picks(Team $team, $week = 1)
+    {
+        $data = new \stdClass();
+        $data->week = $week;
+        $data->schedule = [];
+
+        $data->pick1 = [
+            'selected' => null,
+            'id' => null,
+            'type' => null,
+        ];
+
+        $data->pick2 = [
+            'selected' => null,
+            'id' => null,
+            'type' => null,
+        ];
+
+        $data->picks_left = [
+            'QB' => 2,
+            'RB' => 3,
+            'WRTE' => 1,
+            'K' => 6,
+            'playmakers' => 1,
+            'afc' => 0,
+            'nfc' => 1,
+        ];
+
+        $data->teams_picked = [
+            'AFC' => [
+                ['abbr' => 'IND', 'used' => true],
+            ],
+            'NFC' => [
+                ['abbr' => 'CHI', 'used' => false],
+            ],
+        ];
+
+        return $this->response->item($data, new TeamPickTransformer(), ['key' => 'teams']);
+    }
 }

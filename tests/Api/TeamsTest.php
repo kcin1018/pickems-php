@@ -15,7 +15,7 @@ class TeamsTest extends TestCase
     use DatabaseMigrations;
     const API_URL = 'api/v1/teams/';
 
-    public function testGetTest()
+    public function testGetTeam()
     {
         // make and test request
         $user = factory(User::class)->create();
@@ -25,17 +25,17 @@ class TeamsTest extends TestCase
         $this->assertNotEmpty($collection = json_decode($response->getContent()));
 
         // make and test request for single items
-        foreach ($collection->data as $user) {
-            $response = $this->callGet(self::API_URL.$user->id, [], true);
+        foreach ($collection->data as $dbObject) {
+            $response = $this->callGet(self::API_URL.$dbObject->id, [], true);
             $this->assertResponseOk();
-            $this->assertEquals($user->type, 'teams');
+            $this->assertEquals($dbObject->type, 'teams');
             $this->assertNotNull($item = json_decode($response->getContent()));
-            $this->assertEquals($user->attributes, $item->data->attributes);
+            $this->assertEquals($dbObject->attributes, $item->data->attributes);
             $this->assertFalse(isset($item->data->attributes->password));
         }
     }
 
-    public function testPostTest()
+    public function testPostTeam()
     {
         // generate request data
         $user = factory(User::class)->create();
@@ -70,7 +70,7 @@ class TeamsTest extends TestCase
         }
     }
 
-    public function testPatchTest()
+    public function testPatchTeam()
     {
         // generate request data
         $user = factory(User::class)->create();
@@ -97,8 +97,8 @@ class TeamsTest extends TestCase
         // make and test request
         $response = $this->callPatch(self::API_URL.$objectId, $patchData, true);
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertNotNull($user = json_decode($response->getContent())->data);
-        $this->assertNotEmpty($user->id);
+        $this->assertNotNull($dbObject = json_decode($response->getContent())->data);
+        $this->assertNotEmpty($dbObject->id);
 
         // test data in database
         try {
@@ -109,11 +109,11 @@ class TeamsTest extends TestCase
         }
     }
 
-    public function testDeleteTest()
+    public function testDeleteTeam()
     {
         // generate request data
         $user = factory(User::class)->create();
-        $object = factory(Team::class)->create(['user_id' => $user]);
+        $object = factory(Team::class)->create(['user_id' => $user->id]);
         $response = $this->callDelete(self::API_URL.$object->id, true);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
 

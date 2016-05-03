@@ -16,6 +16,11 @@ class CreateTeamsTable extends Migration
             $table->string('name')->unique();
             $table->boolean('paid')->default(false);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
