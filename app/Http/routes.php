@@ -38,6 +38,8 @@ $api->version('v1', function ($api) {
             $api->post('teams', 'TeamsController@store');
             $api->patch('teams/{team}', 'TeamsController@update');
             $api->delete('teams/{team}', 'TeamsController@destroy');
+
+            $api->get('picks/{team}/{week}', 'PicksController@show');
         });
 
         // Public methods

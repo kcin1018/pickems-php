@@ -23,12 +23,12 @@ class UsersTest extends TestCase
         $this->assertNotEmpty($collection = json_decode($response->getContent()));
 
         // make and test request for single items
-        foreach ($collection->data as $user) {
-            $response = $this->callGet(self::API_URL.$user->id, [], true);
+        foreach ($collection->data as $dbObject) {
+            $response = $this->callGet(self::API_URL.$dbObject->id, [], true);
             $this->assertResponseOk();
-            $this->assertEquals($user->type, 'users');
+            $this->assertEquals($dbObject->type, 'users');
             $this->assertNotNull($item = json_decode($response->getContent()));
-            $this->assertEquals($user->attributes, $item->data->attributes);
+            $this->assertEquals($dbObject->attributes, $item->data->attributes);
             $this->assertFalse(isset($item->data->attributes->password));
         }
     }
@@ -47,12 +47,12 @@ class UsersTest extends TestCase
         // make and test request
         $response = $this->callPost(self::API_URL, $postData, true);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        $this->assertNotNull($user = json_decode($response->getContent())->data);
-        $this->assertNotEmpty($user->id);
+        $this->assertNotNull($dbObject = json_decode($response->getContent())->data);
+        $this->assertNotEmpty($dbObject->id);
 
         // test data in database
         try {
-            User::findOrFail($user->id);
+            User::findOrFail($dbObject->id);
             $this->assertTrue(true);
         } catch (Exception $e) {
             $this->assertTrue(false, 'User account not found');
@@ -77,8 +77,8 @@ class UsersTest extends TestCase
         // make and test request
         $response = $this->callPatch(self::API_URL.$objectId, $patchData, true);
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertNotNull($user = json_decode($response->getContent())->data);
-        $this->assertNotEmpty($user->id);
+        $this->assertNotNull($dbObject = json_decode($response->getContent())->data);
+        $this->assertNotEmpty($dbObject->id);
 
         // test data in database
         try {
