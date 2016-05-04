@@ -17,7 +17,6 @@ class CreateNflGamesTable extends Migration
             $table->string('game_key', 10)->unique();
             $table->string('game_id', 15)->unique();
             $table->string('type', 5);
-
             $table->integer('home_team_id')->unsigned();
             $table->integer('away_team_id')->unsigned();
             $table->integer('winning_team_id')->unsigned()->nullable();
@@ -44,7 +43,6 @@ class CreateNflGamesTable extends Migration
                 ->on('nfl_teams')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->timestamps();
         });
     }
 

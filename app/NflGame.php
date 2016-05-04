@@ -22,4 +22,11 @@ class NflGame extends Model
         'winning_team_id',
         'losing_team_id',
     ];
+
+    public static function fetchSchedule($week)
+    {
+        return self::where('week', '=', $week)
+            ->orderBy('starts_at')
+            ->get();
+    }
 }

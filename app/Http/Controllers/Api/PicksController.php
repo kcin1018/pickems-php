@@ -3,6 +3,7 @@
 namespace Pickems\Http\Controllers\Api;
 
 use Pickems\Team;
+use Pickems\NflGame;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use Pickems\Http\Controllers\Controller;
@@ -16,7 +17,9 @@ class PicksController extends Controller
     {
         $data = new \stdClass();
         $data->week = $week;
-        $data->schedule = [];
+        $data->schedule = NflGame::fetchSchedule($week);
+
+        // $picks = $team->picks($week);
 
         $data->pick1 = [
             'selected' => null,
@@ -29,6 +32,14 @@ class PicksController extends Controller
             'id' => null,
             'type' => null,
         ];
+
+        // foreach($picks as $pick) {
+        //     $data->{'pick'.$pick->number} = [
+        //         'selected' =>
+        //         'id' => ($pick->stat->player_id === null) ? $pick->stat->player_id : $pick->stat->team_id,
+        //         'type' => ($pick->stat->player_id === null) ? 'team' : 'player',
+        //     ];
+        // }
 
         $data->picks_left = [
             'QB' => 2,
