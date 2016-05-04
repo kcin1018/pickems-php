@@ -191,7 +191,6 @@ class Populate extends Command
         try {
             $picks = new TeamPlayoffPick();
             $picks->team_id = $teamId;
-            $picks->starting_
             $pickData = [];
             $teamCounts = [];
             $playoffTeams = NflGame::fetchPlayoffTeams();
