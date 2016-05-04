@@ -2,7 +2,11 @@
 
 namespace Pickems\Console;
 
+use Pickems\Console\Commands\Init;
+use Pickems\Console\Commands\Populate;
+use Pickems\Console\Commands\DumpPlayers;
 use Illuminate\Console\Scheduling\Schedule;
+use Pickems\Console\Commands\UpdatePlayerGis;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
@@ -13,18 +17,18 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        // Commands\Inspire::class,
+        DumpPlayers::class,
+        Init::class,
+        Populate::class,
+        UpdatePlayerGis::class,
     ];
 
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
     }
 }

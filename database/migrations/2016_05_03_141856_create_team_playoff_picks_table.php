@@ -13,7 +13,7 @@ class CreateTeamPlayoffPicksTable extends Migration
         Schema::create('team_playoff_picks', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('team_id')->unsigned();
-            $table->integer('starting_points')->unsigned();
+            $table->integer('starting_points')->unsigned()->default(0);
             $table->text('picks')->nullable();
             $table->boolean('valid')->default(true);
             $table->string('reason')->nullable();

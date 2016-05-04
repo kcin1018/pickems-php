@@ -29,4 +29,26 @@ class NflGame extends Model
             ->orderBy('starts_at')
             ->get();
     }
+
+    public static function fetchCurrentWeek()
+    {
+        // get the first game before the current date
+        $game = static::where('starts_at', '>=', date('Y-m-d H:i:s'))
+            ->orderBy('starts_at', 'asc')
+            ->first();
+
+        // return the week of that game (none return then last week)
+        return (isset($game->week)) ? $game->week : 23;
+    }
+
+    public static function fetchPlayoffTeams()
+    {
+        $teams = [];
+        foreach (static::whereIn('week', [18, 19])->get() as $game) {
+            $teams[$game->away_team_id] = $game->away_team_id;
+            $teams[$game->home_team_id] = $game->home_team_id;
+        }
+
+        return $teams;
+    }
 }

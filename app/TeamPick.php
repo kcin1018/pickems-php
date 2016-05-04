@@ -20,4 +20,14 @@ class TeamPick extends Model
         'valid',
         'reason',
     ];
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function stat()
+    {
+        return $this->belongsTo(NflStat::class);
+    }
 }

@@ -27,3 +27,22 @@ $factory->define(Pickems\Team::class, function (Faker\Generator $faker) {
         'paid' => $faker->boolean,
     ];
 });
+
+$factory->define(Pickems\NflTeam::class, function (Faker\Generator $faker) {
+    return [
+        'abbr' => strtoupper(str_random(3)),
+        'conference' => $faker->randomElement(['NFC', 'AFC']),
+        'city' => $faker->city,
+        'name' => $faker->company,
+    ];
+});
+
+$factory->define(Pickems\NflPlayer::class, function (Faker\Generator $faker) {
+    return [
+        'gsis_id' => str_random(10),
+        'profile_id' => str_random(10),
+        'name' => $faker->name,
+        'position' => $faker->randomElement(['QB', 'RB', 'FB', 'TE', 'WR', 'K']),
+        'active' => $faker->boolean,
+    ];
+});
