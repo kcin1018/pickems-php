@@ -14,4 +14,9 @@ class NflTeam extends Model
     protected $fillable = [
         'abbr', 'conference', 'city', 'name',
     ];
+
+    public function displayName()
+    {
+        return $this->city.' '.$this->name.'-'.$this->abbr.'-'.$this->conference;
+    }
 }

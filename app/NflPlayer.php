@@ -19,4 +19,14 @@ class NflPlayer extends Model
         'position',
         'active',
     ];
+
+    public function team()
+    {
+        return $this->belongsTo(NflTeam::class);
+    }
+
+    public function displayName()
+    {
+        return $this->name.'-'.$this->team->abbr.'-'.$this->position;
+    }
 }
