@@ -43,6 +43,7 @@ $api->version('v1', function ($api) {
         });
 
         // Public methods
+        $api->get('home-stats', 'GeneralController@homeStats');
 
     });
 });
