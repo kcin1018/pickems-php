@@ -14,7 +14,7 @@
 $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', function ($api) {
     if (App::environment() != 'testing') {
-        header('Access-Control-Allow-Origin: http://localhost:4200');
+        header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization');
         header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, PATCH, DELETE');
     }
@@ -29,6 +29,7 @@ $api->version('v1', function ($api) {
         // Protected methods (require auth)
         $api->group(['middleware' => 'api.auth'], function ($api) {
             $api->get('users', 'UsersController@index');
+            $api->get('users/current', 'UsersController@current');
             $api->get('users/{user}', 'UsersController@show');
             $api->patch('users/{user}', 'UsersController@update');
             $api->delete('users/{user}', 'UsersController@destroy');

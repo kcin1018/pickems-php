@@ -25,13 +25,13 @@ class AuthController extends Controller
             if (!$token = JWTAuth::attempt($credentials)) {
                 throw new UnauthorizedHttpException('Email address / password do not match');
             }
+
+            // all good so return the token
+            return $this->response->array(compact('token'));
         } catch (JWTException $e) {
             // something went wrong whilst attempting to encode the token
             throw new HttpException('Unable to login');
         }
-
-        // all good so return the token
-        return $this->response->array(compact('token'));
     }
 
     public function refreshToken(Request $request)

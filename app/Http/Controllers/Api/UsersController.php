@@ -84,4 +84,9 @@ class UsersController extends Controller
 
         return $this->response->array([])->setStatusCode(204);
     }
+
+    public function current(Request $request)
+    {
+        return $this->response->item($this->auth->user(), new UserTransformer(), ['key' => 'users']);
+    }
 }
